@@ -9,13 +9,17 @@ struct AppView: View {
     
     var body: some View {
         WithViewStore(self.store, observe: { $0 }) { viewStore in
-            CaptureScreenView(
-                store: store.scope(
-                    state: \.captureScreen,
-                    action: \.captureScreen
-                ),
-                cameraModel: cameraModel
-            )
+            NavigationStack {
+                CaptureScreenView(
+                    store: store.scope(
+                        state: \.captureScreen,
+                        action: \.captureScreen
+                    ),
+                    cameraModel: cameraModel
+                )
+                .navigationTitle("Captured Moments")
+                .navigationBarTitleDisplayMode(.inline)
+            }
         }
     }
 }

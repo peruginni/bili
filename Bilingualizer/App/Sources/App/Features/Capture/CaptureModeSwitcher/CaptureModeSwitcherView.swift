@@ -44,7 +44,6 @@ struct CaptureModeSwitcherView: View {
             .padding()
             .background(.white)
             .clipShape(.rect(topLeadingRadius: 30, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 30, style: .continuous))
-            .shadow(radius: 1)
             .sheet(isPresented: viewStore.binding(
                 get: { $0.isCameraSheetPresented },
                 send: CaptureModeSwitcher.Action.setCameraSheetPresented

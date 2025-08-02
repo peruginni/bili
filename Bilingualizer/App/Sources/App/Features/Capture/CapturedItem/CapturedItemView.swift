@@ -6,38 +6,31 @@ struct CapturedItemView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack {
-                
-                HStack {
-                    Text(formattedDate(viewStore.createdAt))
-                        .font(.caption)
-                        .foregroundColor(.gray)
-                    
-                    Spacer()
-                }
-                
-                VStack {
-                    
-                    if let translation = viewStore.translation {
-                        Text(translation)
-                            .padding(10)
-                            .background(Color.gray.opacity(0.2))
-                            .cornerRadius(10)
-                    } else if let text = viewStore.text {
+            VStack(alignment: .leading) {
+                Group {
+                    if let text = viewStore.translation ?? viewStore.text {
                         Text(text)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(10)
                             .background(Color.gray.opacity(0.2))
-                            .cornerRadius(10)
                     } else if let photo = viewStore.photo {
                         Image(uiImage: photo)
                             .resizable()
                             .scaledToFit()
-                            .frame(width: 100, height: 100)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
-                    } 
+                    }
+                }
+                .cornerRadius(10)
+                
+                HStack(alignment: .center) {
+                    Text("\(formattedDate(viewStore.createdAt)) · \(viewStore.status.rawValue)")
+                        .font(.caption)
+                        .foregroundColor(.gray)
+                    
+                    
+                    Spacer()
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .trailing)
             .padding(.horizontal)
         }
     }
@@ -50,63 +43,43 @@ struct CapturedItemView: View {
 }
 
 #Preview() {
-    List {
-        Section("User inserts Photo -> .recognizingTextInImage") {
-            CapturedItemView(
-                store: Store(
-                    initialState: CapturedItem.State(
-                        languageSelection: .mock,
-                        status: .recognizingTextInImage,
-                        photo: CapturedItem.State.photo,
-                        text: nil,
-                        translation: nil
-                    ),
-                    reducer: { CapturedItem() }
-                )
+    VStack {
+        CapturedItemView(
+            store: Store(
+                initialState: CapturedItem.State(
+                    languageSelection: .mock,
+                    status: .recognizingTextInImage,
+                    photo: CapturedItem.State.photo,
+                    text: nil,
+                    translation: nil
+                ),
+                reducer: { CapturedItem() }
             )
-        }
-        Section("Recognized photo text -> .translating") {
-            CapturedItemView(
-                store: Store(
-                    initialState: CapturedItem.State(
-                        languageSelection: .mock,
-                        status: .translating,
-                        photo: CapturedItem.State.photo,
-                        text: "Hello",
-                        translation: nil
-                    ),
-                    reducer: { CapturedItem() }
-                )
+        )
+        CapturedItemView(
+            store: Store(
+                initialState: CapturedItem.State(
+                    languageSelection: .mock,
+                    status: .translating,
+                    photo: CapturedItem.State.photo,
+                    text: "Hello",
+                    translation: nil
+                ),
+                reducer: { CapturedItem() }
             )
-        }
-        Section ("User inserts Text -> .translating") {
-            CapturedItemView(
-                store: Store(
-                    initialState: CapturedItem.State(
-                        languageSelection: .mock,
-                        status: .translating,
-                        photo: nil,
-                        text: "Hello",
-                        translation: nil
-                    ),
-                    reducer: { CapturedItem() }
-                )
+        )
+        CapturedItemView(
+            store: Store(
+                initialState: CapturedItem.State(
+                    languageSelection: .mock,
+                    status: .translated,
+                    photo: nil,
+                    text: "Hello",
+                    translation: "Ahoj"
+                ),
+                reducer: { CapturedItem() }
             )
-        }
-        Section("Text translated -> .translated") {
-            CapturedItemView(
-                store: Store(
-                    initialState: CapturedItem.State(
-                        languageSelection: .mock,
-                        status: .translated,
-                        photo: nil,
-                        text: "Hello",
-                        translation: "Ahoj"
-                    ),
-                    reducer: { CapturedItem() }
-                )
-            )
-        }
+        )
     }
 }
 

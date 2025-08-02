@@ -5,10 +5,10 @@ import ComposableArchitecture
 struct CapturedItem {
     struct State: Equatable, Identifiable {
         enum Status: String, Equatable {
-            case notProcessed
-            case recognizingTextInImage
-            case translating
-            case translated
+            case notProcessed = "Queued"
+            case recognizingTextInImage = "Recognizing text in image..."
+            case translating = "Translating..."
+            case translated = "Translated"
         }
         let id: UUID
         let createdAt: Date

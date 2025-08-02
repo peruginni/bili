@@ -10,20 +10,17 @@ struct CaptureScreenView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             VStack {
-                ScrollViewReader { proxy in
-                    ScrollView {
-                        LazyVStack(alignment: .leading, spacing: 8) {
-                            ForEach(
-                                store.scope(state: \.capturedItems, action: \.capturedItems)
-                            ) { childStore in
-                                CapturedItemView(store: childStore)
-                            }
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 8) {
+                        ForEach(
+                            store.scope(state: \.capturedItems, action: \.capturedItems)
+                        ) { childStore in
+                            CapturedItemView(store: childStore)
                         }
-                        .padding()
                     }
-                    .onTapGesture {
-                        isInputActive = false
-                    }
+                }
+                .onTapGesture {
+                    isInputActive = false
                 }
                 
                 CaptureModeSwitcherView(
