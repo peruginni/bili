@@ -1,0 +1,50 @@
+import Foundation
+import SwiftUI
+
+struct SnapItemView: View {
+    @State private var viewModel: SnapItemViewModel
+    
+    init(viewModel: SnapItemViewModel) {
+        _viewModel = State(initialValue: viewModel)
+    }
+    
+    var body: some View {
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+            } else if let snap = viewModel.snap {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(snap.text)
+                        .font(.body)
+                    HStack {
+                        Text("Source: \(snap.source.rawValue.capitalized)")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                        Button("Delete", role: .destructive) {
+                            viewModel.delete()
+                        }
+                        .font(.caption)
+                    }
+                }
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
+            }
+        }
+        .onAppear {
+            viewModel.load()
+        }
+    }
+}
+
+#Preview {
+    let mock = MockSnapsRepository()
+    DI.snapsRepository = mock
+    return SnapItemView(
+        viewModel: SnapItemViewModel(
+            id: mock.snap1.id,
+            onDelete: { }
+        )
+    )
+}
