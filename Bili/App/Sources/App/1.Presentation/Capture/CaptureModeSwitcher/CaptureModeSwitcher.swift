@@ -31,7 +31,6 @@ struct CaptureModeSwitcher {
         
         case textInput(TextInputAction)
         case camera(CameraMode.Action)
-        case setCameraSheetPresented(Bool)
     }
     
     var body: some ReducerOf<Self> {
@@ -51,13 +50,6 @@ struct CaptureModeSwitcher {
                 }
                 return .none
                 
-            case .setCameraSheetPresented(let isPresented):
-                state.isCameraSheetPresented = isPresented  // Toggle sheet
-                if !isPresented {
-                    state.mode = .none  // Reset mode when closing
-                }
-                return .none
-            
             case .textInput(.setText(let newText)):
                 state.textInput = newText
                 return .none

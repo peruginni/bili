@@ -34,6 +34,8 @@ struct CameraModeView: View {
             }
             .overlay(
                 VStack {
+                    Spacer()
+                    
                     HStack {
                         
                         Spacer()
@@ -64,10 +66,7 @@ struct CameraModeView: View {
                             .buttonStyle(.borderless)
                         }
                     }
-                    
-                    Spacer()
                 }
-                .padding() // Adds padding inside the image
             )
 
         }

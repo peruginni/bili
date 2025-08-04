@@ -10,50 +10,67 @@ struct CaptureModeSwitcherView: View {
     
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
-            VStack {
+            ZStack {
                 
-                TextInputView(
-                    placeholder: "Write german text to translate...",
-                    isFocused: isInputActive,
-                    text: .init(
-                        get: { viewStore.textInput },
-                        set: { viewStore.send(.textInput(.setText($0))) }
+                switch viewStore.mode {
+                case .textInput, .speechInput:
+                    TextInputView(
+                        placeholder: "Write german text to translate...",
+                        isFocused: isInputActive,
+                        text: .init(
+                            get: { viewStore.textInput },
+                            set: { viewStore.send(.textInput(.setText($0))) }
+                        )
                     )
-                )
+                case .camera:
+                    CameraModeView(
+                        store: store.scope(state: \.camera, action: \.camera),
+                        model: cameraModel
+                    )
+                case .none:
+                    Text("")
+                }
                 
-                HStack {
-                    
-                    CircleButton(systemImage: "camera.fill", background: .black) {
-                        viewStore.send(.setCameraSheetPresented(true))
-                    }
+                VStack {
                     
                     Spacer()
-
-                    CircleButton(
-                        systemImage: "arrow.up",
-                        background: viewStore.textInput.isEmpty ? .black.opacity(0.2) : .black,
-                        foreground: .white,
-                        borderColor: viewStore.textInput.isEmpty ? .clear : .black.opacity(0.1)
-                    ) {
-                        viewStore.send(.textInput(.confirm), animation: .spring)
+                    
+                    HStack {
+                    
+                        switch viewStore.mode {
+                        case .textInput, .speechInput:
+                            CircleButton(systemImage: "camera.fill", background: .black) {
+                                viewStore.send(.setMode(.camera))
+                            }
+                        case .camera:
+                            CircleButton(systemImage: "pencil", background: .white, foreground: .black) {
+                                viewStore.send(.setMode(.textInput))
+                            }
+                        case .none:
+                            Text("")
+                        }
+                        
+                        
+                        Spacer()
+                        
+                        if viewStore.mode == .textInput {
+                            CircleButton(
+                                systemImage: "arrow.up",
+                                background: viewStore.textInput.isEmpty ? .black.opacity(0.2) : .black,
+                                foreground: .white,
+                                borderColor: viewStore.textInput.isEmpty ? .clear : .black.opacity(0.1)
+                            ) {
+                                viewStore.send(.textInput(.confirm), animation: .spring)
+                            }
+                            .disabled(viewStore.textInput.isEmpty)
+                        }
                     }
-                    .disabled(viewStore.textInput.isEmpty)
                 }
-            
             }
+            .frame(height: CameraModeView.height)
             .padding()
             .background(.white)
             .clipShape(.rect(topLeadingRadius: 30, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 30, style: .continuous))
-            .sheet(isPresented: viewStore.binding(
-                get: { $0.isCameraSheetPresented },
-                send: CaptureModeSwitcher.Action.setCameraSheetPresented
-            )) {
-                CameraModeView(
-                    store: store.scope(state: \.camera, action: \.camera),
-                    model: cameraModel
-                )
-                .presentationDetents([.height(CameraModeView.height)])
-            }
         }
     }
 }
@@ -65,7 +82,7 @@ struct CaptureModeSwitcherView: View {
         CaptureModeSwitcherView(
             store: Store(
                 initialState: CaptureModeSwitcher.State(
-                    mode: .none,
+                    mode: .textInput,
                     textInput: "",
                     camera: CameraMode.State()
                 ),
