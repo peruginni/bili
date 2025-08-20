@@ -14,19 +14,27 @@ struct CaptureModeSwitcherView: View {
                 
                 switch viewStore.mode {
                 case .textInput, .speechInput:
-                    TextInputView(
-                        placeholder: "Write german text to translate...",
-                        isFocused: isInputActive,
-                        text: .init(
-                            get: { viewStore.textInput },
-                            set: { viewStore.send(.textInput(.setText($0))) }
+                    VStack {
+                        TextInputView(
+                            placeholder: "Write german text to translate...",
+                            isFocused: isInputActive,
+                            text: .init(
+                                get: { viewStore.textInput },
+                                set: { viewStore.send(.textInput(.setText($0))) }
+                            )
                         )
-                    )
+                        .padding()
+                        Spacer()
+                    }
+                    .padding(.top, 20)
                 case .camera:
-                    CameraModeView(
-                        store: store.scope(state: \.camera, action: \.camera),
-                        model: cameraModel
-                    )
+                    VStack {
+                        CameraModeView(
+                            store: store.scope(state: \.camera, action: \.camera),
+                            model: cameraModel
+                        )
+                        Spacer()
+                    }
                 case .none:
                     Text("")
                 }
@@ -38,13 +46,27 @@ struct CaptureModeSwitcherView: View {
                     HStack {
                     
                         switch viewStore.mode {
-                        case .textInput, .speechInput:
+                        case .textInput:
                             CircleButton(systemImage: "camera.fill", background: .black) {
                                 viewStore.send(.setMode(.camera))
                             }
+                            CircleButton(systemImage: "microphone.fill", background: .white, foreground: .black, borderColor: .black) {
+                                viewStore.send(.setMode(.speechInput))
+                            }
+                        case .speechInput:
+                            CircleButton(systemImage: "camera.fill", background: .black) {
+                                viewStore.send(.setMode(.camera))
+                            }
+                            CircleButton(systemImage: "stop.fill", background: .white, foreground: .black, borderColor: .black) {
+                                viewStore.send(.setMode(.textInput))
+                            }
+                            Text("Recording...")
                         case .camera:
                             CircleButton(systemImage: "pencil", background: .white, foreground: .black) {
                                 viewStore.send(.setMode(.textInput))
+                            }
+                            CircleButton(systemImage: "microphone.fill", background: .white, foreground: .black, borderColor: .black) {
+                                viewStore.send(.setMode(.speechInput))
                             }
                         case .none:
                             Text("")
@@ -53,7 +75,7 @@ struct CaptureModeSwitcherView: View {
                         
                         Spacer()
                         
-                        if viewStore.mode == .textInput {
+                        if viewStore.mode == .textInput || viewStore.mode == .speechInput {
                             CircleButton(
                                 systemImage: "arrow.up",
                                 background: viewStore.textInput.isEmpty ? .black.opacity(0.2) : .black,
@@ -65,12 +87,16 @@ struct CaptureModeSwitcherView: View {
                             .disabled(viewStore.textInput.isEmpty)
                         }
                     }
+                    .ignoresSafeArea(.all)
                 }
+                .padding(.horizontal)
+                .padding(.bottom, 20)
+                .ignoresSafeArea(.all)
+                
             }
+            .ignoresSafeArea(.all)
             .frame(height: CameraModeView.height)
-            .padding()
-            .background(.white)
-            .clipShape(.rect(topLeadingRadius: 30, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 30, style: .continuous))
+            // .clipShape(.rect(topLeadingRadius: 30, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 30, style: .continuous))
         }
     }
 }
@@ -86,7 +112,7 @@ struct CaptureModeSwitcherView: View {
                     textInput: "",
                     camera: CameraMode.State()
                 ),
-                reducer: { CaptureModeSwitcher() }
+                reducer: { CaptureModeSwitcher(delegate: nil) }
             ) {
                 $0.cameraPermissionClient = CameraPermissionClient(
                     requestCameraPermission: {

@@ -3,7 +3,7 @@ import ComposableArchitecture
 
 struct CameraModeView: View {
     
-    static let height = CameraClientConstant.captureHeight - 50
+    static let height = CameraClientConstant.captureHeight
     
     let store: StoreOf<CameraMode>
     
@@ -32,6 +32,10 @@ struct CameraModeView: View {
                     }
                 }
             }
+            .onTapGesture {
+                guard viewStore.cameraPermissionGranted else { return }
+                snapPhoto(viewStore: viewStore)
+            }
             .overlay(
                 VStack {
                     Spacer()
@@ -43,11 +47,7 @@ struct CameraModeView: View {
                         if viewStore.cameraPermissionGranted {
                             // Snap Photo Button
                             CircleButton(systemImage: "circle.fill", background: .white, foreground: .black, borderColor: .black.opacity(0.1)) {
-                                model.capturePhoto { image in
-                                    if let image = image {
-                                        viewStore.send(.snapPhoto(image))
-                                    }
-                                }
+                                snapPhoto(viewStore: viewStore)
                             }
                         } else {
                             Button(
@@ -65,14 +65,27 @@ struct CameraModeView: View {
                             )
                             .buttonStyle(.borderless)
                         }
+                        
                     }
+                    .ignoresSafeArea(.all)
                 }
+                .padding(.horizontal)
+                .padding(.bottom, 20)
+                .ignoresSafeArea(.all)
             )
 
         }
         .ignoresSafeArea()
         .onAppear {
             store.send(.requestCameraPermission)
+        }
+    }
+    
+    func snapPhoto(viewStore: ViewStore<CameraMode.State, CameraMode.Action>) {
+        model.capturePhoto { image in
+            if let image = image {
+                viewStore.send(.snapPhoto(image))
+            }
         }
     }
 }

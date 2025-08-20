@@ -5,6 +5,13 @@ import SwiftUI
 @Reducer
 struct CaptureModeSwitcher {
     
+    struct Delegate {
+        let didCaptureText: (String) -> Void
+        let didCaptureImage: (UIImage) -> Void
+    }
+    
+    let delegate: Delegate?
+    
     enum Mode: Equatable {
         case camera
         case textInput
@@ -59,6 +66,15 @@ struct CaptureModeSwitcher {
                 
             case .camera(.cancel):
                 return .send(.setMode(.none))
+                
+            case .textInput(.confirm):
+                delegate?.didCaptureText(state.textInput)
+                state.textInput = ""
+                return .none
+                
+            case .camera(.snapPhoto(let photo)):
+                delegate?.didCaptureImage(photo)
+                return .none
                 
             case .textInput, .camera:
                 return .none // These are handled by the respective reducers

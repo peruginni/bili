@@ -3,9 +3,7 @@ import Dependencies
 import ComposableArchitecture
 
 struct SnapsView: View {
-    @State var viewModel = SnapsViewModel()
-    @State private var isInputActive = false
-    @State private var inputText = ""
+    @State private var viewModel = SnapsViewModel()
     
     var body: some View {
         NavigationView {
@@ -30,36 +28,45 @@ struct SnapsView: View {
                     HStack {
                         Spacer()
                         CircleButton(systemImage: "plus", background: .accentColor, foreground: .white, borderColor: .accentColor.opacity(0.1)) {
-                            isInputActive = true
+                            viewModel.isInputActive = true
                         }
                         .padding()
                     }
                 }
             }
             .navigationTitle("Snaps")
-            .sheet(isPresented: $isInputActive) {
-                VStack {
-                    CaptureModeSwitcherView(
-                        store: Store(
-                            initialState: CaptureModeSwitcher.State(
-                                mode: .textInput,
-                                textInput: "",
-                                camera: CameraMode.State()
-                            ),
-                            reducer: { CaptureModeSwitcher() }
-                        ) {
-                            $0.cameraPermissionClient = CameraPermissionClient(
-                                requestCameraPermission: {
-                                    // Simulate granted permission
-                                    return true
-                                }
+            .sheet(isPresented: $viewModel.isInputActive) {
+                CaptureModeSwitcherView(
+                    store: Store(
+                        initialState: CaptureModeSwitcher.State(
+                            mode: .textInput,
+                            textInput: "",
+                            camera: CameraMode.State()
+                        ),
+                        reducer: {
+                            CaptureModeSwitcher(
+                                delegate: CaptureModeSwitcher.Delegate(
+                                    didCaptureText: {
+                                        viewModel.addSnap($0)
+                                    },
+                                    didCaptureImage: {
+                                        viewModel.addSnap($0)
+                                    }
+                                )
                             )
-                        },
-                        cameraModel: .mock,
-                        isInputActive: FocusState<Bool>().projectedValue
-                    )
-                }
-                .presentationDetents([.fraction(1/3)])
+                        }
+                    ) {
+                        $0.cameraPermissionClient = CameraPermissionClient(
+                            requestCameraPermission: {
+                                // Simulate granted permission
+                                return true
+                            }
+                        )
+                    },
+                    cameraModel: .mock,
+                    isInputActive: FocusState<Bool>().projectedValue
+                )
+                .presentationDetents([.height(CameraModeView.height - 50)])
                 .presentationDragIndicator(.visible)
             }
         }
