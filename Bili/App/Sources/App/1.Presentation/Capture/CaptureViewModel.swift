@@ -12,7 +12,7 @@ final class CaptureViewModel {
     }
     
     // MARK: - Dependencies
-    let cameraPermissionService: CameraPermissionService = DI.cameraPermissionService
+    let cameraPermissionService = DI.cameraPermissionService
     
     struct Delegate {
         var onTextCaptured: ((String) -> Void)

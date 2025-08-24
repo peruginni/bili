@@ -1,9 +1,8 @@
-
-
 import SwiftUI
 
 struct CaptureView: View {
     @State var viewModel: CaptureViewModel
+    @FocusState private var textEditorIsFocused: Bool
     
     init(viewModel: State<CaptureViewModel>) {
         _viewModel = viewModel
@@ -19,7 +18,9 @@ struct CaptureView: View {
             
             bottomControls
                 .frame(height: Self.totalHeight * 0.3)
-                .background(Color(UIColor.systemGray6))
+        }
+        .onChange(of: viewModel.inputMode) { _, newMode in
+            textEditorIsFocused = newMode == .text
         }
         .frame(height: Self.totalHeight)
     }
@@ -32,6 +33,7 @@ struct CaptureView: View {
             TextEditor(text: $viewModel.capturedText)
                 .padding(8)
                 .background(Color.white)
+                .focused($textEditorIsFocused)
         case .camera:
             if viewModel.cameraPermissionGranted == true {
                 CameraPreviewView()
