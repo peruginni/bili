@@ -14,6 +14,12 @@ struct SnapItemView: View {
                 ProgressView()
             } else if let snap = viewModel.snap {
                 VStack(alignment: .leading, spacing: 8) {
+                    if let image = snap.image {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 300, height: 150)
+                    }
                     Text(snap.text ?? "")
                         .font(.body)
                     HStack {
@@ -38,12 +44,12 @@ struct SnapItemView: View {
     }
 }
 
-//#Preview {
-//    DI.snapsRepository = .mock
-//    return SnapItemView(
-//        viewModel: SnapItemViewModel(
-//            id: MockSnapsRepository.snap1.id,
-//            onDelete: { }
-//        )
-//    )
-//}
+#Preview {
+    DI.snapsRepository.mock(MockSnapsRepository())
+    return SnapItemView(
+        viewModel: SnapItemViewModel(
+            id: MockSnapsRepository.snap1.id,
+            onDelete: { }
+        )
+    )
+}

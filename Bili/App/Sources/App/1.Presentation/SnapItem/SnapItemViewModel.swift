@@ -16,11 +16,14 @@ final class SnapItemViewModel {
     init(id: UUID, onDelete: @escaping () -> Void) {
         self.id = id
         self.onDelete = onDelete
+        onAppear()
     }
 
     func onAppear() {
+        print("ondra - SnapItemViewModel.onAppear - \(id)")
         isLoading = true
         snap = repository.load(id: id)
+        print("ondra - SnapItemViewModel.onAppear - \(id) loaded \(snap?.text)")
         isLoading = false
     }
 

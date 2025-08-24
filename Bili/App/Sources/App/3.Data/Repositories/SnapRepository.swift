@@ -8,8 +8,10 @@ protocol SnapsRepository: AnyObject {
     func delete(id: UUID)
 }
 
+private let shared = InMemorySnapsRepository()
+
 extension DI {
-    static var snapsRepository = Factory<SnapsRepository> { InMemorySnapsRepository() }
+    static var snapsRepository = Factory<SnapsRepository> { shared }
 }
 
 final class InMemorySnapsRepository: SnapsRepository {
@@ -42,7 +44,7 @@ final class MockSnapsRepository: SnapsRepository {
     static let snap1 = Snap(
         id: UUID(uuidString: "00000000-0000-0000-0000-000000000001")!,
         text: nil,
-        image: UIImage(systemName: "camera")!,
+        image: UIImage(named: "captured-item-example", in: Bundle.main, with: nil) ?? UIImage(),
         date: .now,
         source: .photo,
         unknownWords: ["quick", "lazy"]
@@ -65,7 +67,7 @@ final class MockSnapsRepository: SnapsRepository {
             let id = UUID()
             store[id] = Snap(
                 id: id,
-                text: "Language learning works best with repetition and fun.",
+                text: "Text \(i)",
                 image: nil,
                 date: .now.addingTimeInterval(-3000.0 - Double(i)),
                 source: .typed,

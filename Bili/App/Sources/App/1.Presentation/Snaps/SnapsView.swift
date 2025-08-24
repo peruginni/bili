@@ -51,23 +51,19 @@ struct SnapsView: View {
     
     @ViewBuilder
     private var addButton: some View {
-//        VStack {
-//            Spacer()
-//            HStack {
-//                Spacer()
-                CircleButton(systemImage: "plus", background: .accentColor, foreground: .white, borderColor: .accentColor.opacity(0.1)) {
-                    viewModel.isInputActive = true
-                }
-                .padding()
-                .frame(maxHeight: .infinity, alignment: .bottom)
-//            }
-//        }
+        CircleButton(systemImage: "plus", background: .accentColor, foreground: .white, borderColor: .accentColor.opacity(0.1)) {
+            viewModel.isInputActive = true
+        }
+        .padding()
+        .frame(maxHeight: .infinity, alignment: .bottom)
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
 }
 
 #Preview {
     DI.cameraModel = .mock
     DI.cameraPermissionService = .mockAuthorized
-    DI.snapsRepository.mock(MockSnapsRepository())
+    let mock = MockSnapsRepository()
+    DI.snapsRepository.mock(mock)
     return SnapsView()
 }

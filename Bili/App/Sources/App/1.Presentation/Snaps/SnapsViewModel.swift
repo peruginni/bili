@@ -4,7 +4,9 @@ import UIKit
 @MainActor
 @Observable
 final class SnapsViewModel {
-    private let repository = DI.snapsRepository()
+    
+    @ObservationIgnored
+    @Injected(DI.snapsRepository) var repository
     
     var snapIDs: [UUID] = []
     var isInputActive = false
