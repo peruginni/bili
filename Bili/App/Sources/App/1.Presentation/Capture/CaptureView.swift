@@ -15,18 +15,16 @@ struct CaptureView: View {
     static let bottomPartHeight: CGFloat = 60
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack() {
             upperPart
-                .frame(height: Self.upperPartHeight)
-                .clipped()
-            
+                
             bottomControls
                 .frame(height: Self.bottomPartHeight)
+                .frame(maxHeight: .infinity, alignment: .bottom)
         }
         .onChange(of: viewModel.inputMode) { _, newMode in
             textEditorIsFocused = newMode == .text
         }
-        .frame(height: Self.totalHeight)
     }
     
     // MARK: - Upper Part
@@ -39,6 +37,7 @@ struct CaptureView: View {
                 TextEditor(text: $viewModel.capturedText)
                     .focused($textEditorIsFocused)
                     .scrollContentBackground(.hidden)
+                    .padding(.bottom, Self.bottomPartHeight)
                 
                 if viewModel.capturedText.isEmpty {
                     Text("Write german text to translate...")
@@ -47,12 +46,12 @@ struct CaptureView: View {
                         .padding(.vertical, 8)
                 }
             }
+            .padding(.top, 10)
+            .padding(.horizontal, 10)
             
         case .camera:
             if viewModel.cameraPermissionGranted == true {
                 CameraPreview()
-                    .frame(height: Self.totalHeight)
-                    .frame(maxWidth: .infinity)
                     .background(Color.black)
                     .ignoresSafeArea()
                     .onTapGesture {
