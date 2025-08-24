@@ -10,16 +10,3 @@ struct AppView: View {
         }
     }
 }
-
-#Preview {
-    withDependencies {
-        $0.cameraPermissionClient = CameraPermissionClient(
-            requestCameraPermission: {
-                // Simulate granted permission
-                return true
-            }
-        )
-    } operation: {
-        AppView()
-    }
-}

@@ -6,27 +6,25 @@ struct SnapsView: View {
     @State private var viewModel = SnapsViewModel()
     
     var body: some View {
-        NavigationView {
-            ZStack {
-                listOfSnaps
-                addButton
-            }
-            .onAppear {
-                viewModel.onAppear()
-            }
-            .navigationTitle("Snaps")
-            .sheet(isPresented: $viewModel.isInputActive) {
-                CaptureView(
-                    viewModel: CaptureViewModel(
-                        delegate: .init(
-                            onTextCaptured: viewModel.addSnap,
-                            onPhotoCaptured: viewModel.addSnap
-                        )
+        ZStack {
+            listOfSnaps
+            addButton
+        }
+        .onAppear {
+            viewModel.onAppear()
+        }
+        .navigationTitle("Snaps")
+        .sheet(isPresented: $viewModel.isInputActive) {
+            CaptureView(
+                viewModel: CaptureViewModel(
+                    delegate: .init(
+                        onTextCaptured: viewModel.addSnap,
+                        onPhotoCaptured: viewModel.addSnap
                     )
                 )
-                .presentationDetents([.height(CaptureView.totalHeight)])
-                .presentationDragIndicator(.hidden)
-            }
+            )
+            .presentationDetents([.height(CaptureView.totalHeight)])
+            .presentationDragIndicator(.hidden)
         }
     }
     
