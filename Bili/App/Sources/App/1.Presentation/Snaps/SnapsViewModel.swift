@@ -8,7 +8,7 @@ final class SnapsViewModel {
     @ObservationIgnored
     @Injected(DI.snapsRepository) var repository
     
-    var snapIDs: [UUID] = []
+    var snaps: [SnapItemViewModel] = []
     var isInputActive = false
     
     init() {}
@@ -18,7 +18,20 @@ final class SnapsViewModel {
     }
     
     func reload() {
-        snapIDs = repository.getAllIDs()
+        snaps = repository.getAllIDs().map { id in
+            SnapItemViewModel(id: id, loaded: nil)
+        }
+        snaps = snaps.map { snap in
+            var snap = snap
+            if let loadedSnap = repository.load(id: snap.id) {
+                snap.loaded = .init(
+                    text: loadedSnap.text,
+                    image: loadedSnap.image,
+                    source: loadedSnap.source
+                )
+            }
+            return snap
+        }
     }
 
     func addSnap(_ snap: String) {

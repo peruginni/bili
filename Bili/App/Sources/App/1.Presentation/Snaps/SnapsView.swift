@@ -10,7 +10,12 @@ struct SnapsView: View {
             listOfSnaps
             addButton
         }
+        .task {
+            print("task")
+            viewModel.reload()
+        }
         .onAppear {
+            print("onapear")
             viewModel.onAppear()
         }
         .navigationTitle("Snaps")
@@ -31,15 +36,10 @@ struct SnapsView: View {
     @ViewBuilder
     private var listOfSnaps: some View {
         ScrollView {
-            LazyVStack(spacing: 16) {
-                ForEach(viewModel.snapIDs, id: \.self) { id in
-                    SnapItemView(
-                        viewModel: SnapItemViewModel(
-                            id: id,
-                            onDelete: viewModel.reload
-                        )
-                    )
-                    .padding(.horizontal)
+            LazyVStack {
+                ForEach(viewModel.snaps, id: \.self) { snap in
+                    SnapItemView(viewModel: snap)
+                        .padding(.horizontal)
                 }
                 
                 Spacer()
