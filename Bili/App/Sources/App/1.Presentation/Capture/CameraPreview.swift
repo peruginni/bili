@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 
 struct CameraPreview: UIViewControllerRepresentable {
-    @ObservedObject var cameraModel: CameraClientObservableWrapper
+    let cameraModel = DI.cameraModel
     
     func makeUIViewController(context: Context) -> UIViewController {
         let controller = MyVC()

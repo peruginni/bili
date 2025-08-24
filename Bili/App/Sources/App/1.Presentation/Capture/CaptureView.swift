@@ -1,23 +1,27 @@
 import SwiftUI
 
 struct CaptureView: View {
+    let cameraModel = DI.cameraModel
+    
     @State var viewModel: CaptureViewModel
     @FocusState private var textEditorIsFocused: Bool
     
-    init(viewModel: State<CaptureViewModel>) {
-        _viewModel = viewModel
+    init(viewModel: CaptureViewModel) {
+        _viewModel = State(initialValue: viewModel)
     }
     
-    static let totalHeight: CGFloat = 300
+    static let totalHeight: CGFloat = 200
+    static let upperPartHeight: CGFloat = Self.totalHeight - Self.bottomPartHeight
+    static let bottomPartHeight: CGFloat = 60
     
     var body: some View {
         VStack(spacing: 0) {
             upperPart
-                .frame(height: Self.totalHeight * 0.7)
+                .frame(height: Self.upperPartHeight)
                 .clipped()
             
             bottomControls
-                .frame(height: Self.totalHeight * 0.3)
+                .frame(height: Self.bottomPartHeight)
         }
         .onChange(of: viewModel.inputMode) { _, newMode in
             textEditorIsFocused = newMode == .text
@@ -30,17 +34,27 @@ struct CaptureView: View {
     private var upperPart: some View {
         switch viewModel.inputMode {
         case .text:
-            TextEditor(text: $viewModel.capturedText)
-                .padding(8)
-                .background(Color.white)
-                .focused($textEditorIsFocused)
+            
+            ZStack(alignment: .topLeading) {
+                TextEditor(text: $viewModel.capturedText)
+                    .focused($textEditorIsFocused)
+                    .scrollContentBackground(.hidden)
+                
+                if viewModel.capturedText.isEmpty {
+                    Text("Write german text to translate...")
+                        .foregroundColor(.gray)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 8)
+                }
+            }
+            
         case .camera:
             if viewModel.cameraPermissionGranted == true {
-                CameraPreviewView()
-                    .overlay(alignment: .bottom) {
-                        // empty overlay so preview goes under buttons
-                        Color.clear.frame(height: Self.totalHeight * 0.3)
-                    }
+                CameraPreview()
+                    .frame(height: Self.totalHeight)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.black)
+                    .ignoresSafeArea()
                     .onTapGesture {
                         snapPhoto()
                     }
@@ -106,9 +120,10 @@ struct CaptureView: View {
     }
     
     func snapPhoto() {
-        // Simulate photo capture with a placeholder image
-        let dummyImage = UIImage(systemName: "camera.fill")!
-        viewModel.confirmPhoto(dummyImage)
+        cameraModel.capturePhoto { image in
+            guard let image else { return }
+            viewModel.confirmPhoto(image)
+        }
     }
 }
 
@@ -126,14 +141,11 @@ struct CameraPreviewView: View {
 
 @MainActor
 private func makeCaptureView() -> some View {
-    CaptureView(
-        viewModel: State(
-            initialValue: CaptureViewModel(delegate: .mock)
-        )
-    )
+    CaptureView(viewModel: CaptureViewModel(delegate: .mock))
 }
 
 #Preview("authorized") {
+    DI.cameraModel = .mock
     DI.cameraPermissionService = .mockAuthorized
     return makeCaptureView()
 }

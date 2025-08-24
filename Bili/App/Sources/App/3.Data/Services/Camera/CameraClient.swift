@@ -189,7 +189,8 @@ class CameraClientMock: NSObject, CameraClient {
     }
     
     func capturePhoto(completion: @escaping (UIImage?) -> Void) {
-        completion(UIImage())
+        let dummyImage = UIImage(systemName: "camera.fill")!
+        completion(dummyImage)
     }
     
     func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: (any Error)?) {

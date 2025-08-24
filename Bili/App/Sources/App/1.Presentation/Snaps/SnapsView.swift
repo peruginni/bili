@@ -38,12 +38,12 @@ struct SnapsView: View {
             .navigationTitle("Snaps")
             .sheet(isPresented: $viewModel.isInputActive) {
                 CaptureView(
-                    viewModel: State(initialValue: CaptureViewModel(
+                    viewModel: CaptureViewModel(
                         delegate: .init(
                             onTextCaptured: viewModel.addSnap,
                             onPhotoCaptured: viewModel.addSnap
                         )
-                    ))
+                    )
                 )
                 .presentationDetents([.height(CaptureView.totalHeight)])
                 .presentationDragIndicator(.hidden)
@@ -53,6 +53,7 @@ struct SnapsView: View {
 }
 
 #Preview {
+    DI.cameraModel = .mock
     DI.cameraPermissionService = .mockAuthorized
     DI.snapsRepository = MockSnapsRepository()
     return SnapsView()
