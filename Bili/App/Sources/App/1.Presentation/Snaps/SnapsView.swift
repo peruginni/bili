@@ -8,32 +8,11 @@ struct SnapsView: View {
     var body: some View {
         NavigationView {
             ZStack {
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        ForEach(viewModel.snapIDs, id: \.self) { id in
-                            SnapItemView(
-                                viewModel: SnapItemViewModel(
-                                    id: id,
-                                    onDelete: { viewModel.deleteSnap(id: id) }
-                                )
-                            )
-                            .padding(.horizontal)
-                        }
-                        
-                        Spacer()
-                    }
-                }
-                
-                VStack {
-                    Spacer()
-                    HStack {
-                        Spacer()
-                        CircleButton(systemImage: "plus", background: .accentColor, foreground: .white, borderColor: .accentColor.opacity(0.1)) {
-                            viewModel.isInputActive = true
-                        }
-                        .padding()
-                    }
-                }
+                listOfSnaps
+                addButton
+            }
+            .onAppear {
+                viewModel.onAppear()
             }
             .navigationTitle("Snaps")
             .sheet(isPresented: $viewModel.isInputActive) {
@@ -50,11 +29,45 @@ struct SnapsView: View {
             }
         }
     }
+    
+    @ViewBuilder
+    private var listOfSnaps: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                ForEach(viewModel.snapIDs, id: \.self) { id in
+                    SnapItemView(
+                        viewModel: SnapItemViewModel(
+                            id: id,
+                            onDelete: viewModel.reload
+                        )
+                    )
+                    .padding(.horizontal)
+                }
+                
+                Spacer()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var addButton: some View {
+//        VStack {
+//            Spacer()
+//            HStack {
+//                Spacer()
+                CircleButton(systemImage: "plus", background: .accentColor, foreground: .white, borderColor: .accentColor.opacity(0.1)) {
+                    viewModel.isInputActive = true
+                }
+                .padding()
+                .frame(maxHeight: .infinity, alignment: .bottom)
+//            }
+//        }
+    }
 }
 
 #Preview {
     DI.cameraModel = .mock
     DI.cameraPermissionService = .mockAuthorized
-    DI.snapsRepository = MockSnapsRepository()
+    DI.snapsRepository.mock(MockSnapsRepository())
     return SnapsView()
 }

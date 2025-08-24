@@ -4,16 +4,18 @@ import UIKit
 @MainActor
 @Observable
 final class SnapsViewModel {
-    private let repository = DI.snapsRepository
+    private let repository = DI.snapsRepository()
     
     var snapIDs: [UUID] = []
     var isInputActive = false
     
-    init() {
-        reloadIDs()
+    init() {}
+    
+    func onAppear() {
+        reload()
     }
     
-    func reloadIDs() {
+    func reload() {
         snapIDs = repository.getAllIDs()
     }
 
@@ -22,36 +24,33 @@ final class SnapsViewModel {
             Snap(
                 id: UUID(),
                 text: snap,
+                image: nil,
                 date: Date(),
                 source: .typed,
                 unknownWords: []
             )
         )
         isInputActive = false
-        reloadIDs()
+        reload()
     }
     
     func addSnap(_ snap: UIImage) {
         repository.save(
             Snap(
                 id: UUID(),
-                text: "todo text from image",
+                text: nil,
+                image: snap,
                 date: Date(),
                 source: .photo,
                 unknownWords: []
             )
         )
         isInputActive = false
-        reloadIDs()
+        reload()
     }
     
     func addSnap(_ snap: Snap) {
         repository.save(snap)
-        reloadIDs()
-    }
-    
-    func deleteSnap(id: UUID) {
-        repository.delete(id: id)
-        reloadIDs()
+        reload()
     }
 }

@@ -14,7 +14,7 @@ struct SnapItemView: View {
                 ProgressView()
             } else if let snap = viewModel.snap {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(snap.text)
+                    Text(snap.text ?? "")
                         .font(.body)
                     HStack {
                         Text("Source: \(snap.source.rawValue.capitalized)")
@@ -33,18 +33,17 @@ struct SnapItemView: View {
             }
         }
         .onAppear {
-            viewModel.load()
+            viewModel.onAppear()
         }
     }
 }
 
-#Preview {
-    let mock = MockSnapsRepository()
-    DI.snapsRepository = mock
-    return SnapItemView(
-        viewModel: SnapItemViewModel(
-            id: mock.snap1.id,
-            onDelete: { }
-        )
-    )
-}
+//#Preview {
+//    DI.snapsRepository = .mock
+//    return SnapItemView(
+//        viewModel: SnapItemViewModel(
+//            id: MockSnapsRepository.snap1.id,
+//            onDelete: { }
+//        )
+//    )
+//}
