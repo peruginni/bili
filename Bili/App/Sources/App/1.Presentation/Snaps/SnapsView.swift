@@ -10,13 +10,8 @@ struct SnapsView: View {
             listOfSnaps
             addButton
         }
-        .task {
-            print("task")
-            viewModel.reload()
-        }
         .onAppear {
-            print("onapear")
-            viewModel.onAppear()
+            viewModel.reload()
         }
         .navigationTitle("Snaps")
         .sheet(isPresented: $viewModel.isInputActive) {

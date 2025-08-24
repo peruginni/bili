@@ -13,10 +13,6 @@ final class SnapsViewModel {
     
     init() {}
     
-    func onAppear() {
-        reload()
-    }
-    
     func reload() {
         snaps = repository.getAllIDs().map { id in
             SnapItemViewModel(id: id, loaded: nil)
