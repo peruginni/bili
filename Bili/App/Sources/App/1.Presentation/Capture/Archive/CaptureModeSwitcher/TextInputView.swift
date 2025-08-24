@@ -12,7 +12,7 @@ struct TextInputView: View {
             TextEditor(text: $text)
                 .focused(isFocused)
                 .scrollContentBackground(.hidden)
-                .frame(height: CameraClientConstant.captureHeight - 70)
+                .frame(height: CameraClientConstant.captureHeight - 90)
             
             
             if text.isEmpty, !isFocused.wrappedValue {

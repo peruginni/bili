@@ -19,8 +19,9 @@ struct SnapsView: View {
                             )
                             .padding(.horizontal)
                         }
+                        
+                        Spacer()
                     }
-                    .padding(.vertical)
                 }
                 
                 VStack {
@@ -36,53 +37,23 @@ struct SnapsView: View {
             }
             .navigationTitle("Snaps")
             .sheet(isPresented: $viewModel.isInputActive) {
-                CaptureModeSwitcherView(
-                    store: Store(
-                        initialState: CaptureModeSwitcher.State(
-                            mode: .textInput,
-                            textInput: "",
-                            camera: CameraMode.State()
-                        ),
-                        reducer: {
-                            CaptureModeSwitcher(
-                                delegate: CaptureModeSwitcher.Delegate(
-                                    didCaptureText: {
-                                        viewModel.addSnap($0)
-                                    },
-                                    didCaptureImage: {
-                                        viewModel.addSnap($0)
-                                    }
-                                )
-                            )
-                        }
-                    ) {
-                        $0.cameraPermissionClient = CameraPermissionClient(
-                            requestCameraPermission: {
-                                // Simulate granted permission
-                                return true
-                            }
+                CaptureView(
+                    viewModel: State(initialValue: CaptureViewModel(
+                        delegate: .init(
+                            onTextCaptured: viewModel.addSnap,
+                            onPhotoCaptured: viewModel.addSnap
                         )
-                    },
-                    cameraModel: .mock,
-                    isInputActive: FocusState<Bool>().projectedValue
+                    ))
                 )
-                .presentationDetents([.height(CameraModeView.height - 50)])
-                .presentationDragIndicator(.visible)
+                .presentationDetents([.height(CaptureView.totalHeight)])
+                .presentationDragIndicator(.hidden)
             }
         }
     }
 }
 
 #Preview {
-    withDependencies {
-        $0.cameraPermissionClient = CameraPermissionClient(
-            requestCameraPermission: {
-                // Simulate granted permission
-                return true
-            }
-        )
-    } operation: {
-        DI.snapsRepository = MockSnapsRepository()
-        return SnapsView()
-    }
+    DI.cameraPermissionService = .mockAuthorized
+    DI.snapsRepository = MockSnapsRepository()
+    return SnapsView()
 }

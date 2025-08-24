@@ -14,6 +14,7 @@
 
 /* Begin PBXFileReference section */
 		1AAC7F2995E53F187F165603 /* Pods_Bilingualizer.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Bilingualizer.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B3708E62E5B0449004B3993 /* Notes.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Notes.md; sourceTree = "<group>"; };
 		2B38FBF9290894E400B8F1E9 /* Bilingualizer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Bilingualizer-Info.plist"; sourceTree = SOURCE_ROOT; };
 		2B395C322AA292EC008BA0DB /* App */ = {isa = PBXFileReference; lastKnownFileType = text; path = App; sourceTree = SOURCE_ROOT; };
 		2BDB7F0629073C6600F86FE5 /* Bilingualizer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Bilingualizer.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -37,6 +38,7 @@
 		2BDB7EFD29073C6600F86FE5 = {
 			isa = PBXGroup;
 			children = (
+				2B3708E62E5B0449004B3993 /* Notes.md */,
 				2BDB7F0829073C6600F86FE5 /* Bilingualizer */,
 				2BDB7F0729073C6600F86FE5 /* Products */,
 				E8A081E099B7864F0ED7FA64 /* Frameworks */,

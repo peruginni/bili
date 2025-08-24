@@ -11,6 +11,7 @@ struct CaptureModeSwitcherView: View {
     var body: some View {
         WithViewStore(store, observe: { $0 }) { viewStore in
             ZStack {
+                Color.white.ignoresSafeArea()
                 
                 switch viewStore.mode {
                 case .textInput, .speechInput:
@@ -87,14 +88,14 @@ struct CaptureModeSwitcherView: View {
                             .disabled(viewStore.textInput.isEmpty)
                         }
                     }
-                    .ignoresSafeArea(.all)
+                    // .ignoresSafeArea(.all)
                 }
                 .padding(.horizontal)
                 .padding(.bottom, 20)
-                .ignoresSafeArea(.all)
+                //.ignoresSafeArea(.all)
                 
             }
-            .ignoresSafeArea(.all)
+            // .ignoresSafeArea(.all)
             .frame(height: CameraModeView.height)
             // .clipShape(.rect(topLeadingRadius: 30, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 30, style: .continuous))
         }

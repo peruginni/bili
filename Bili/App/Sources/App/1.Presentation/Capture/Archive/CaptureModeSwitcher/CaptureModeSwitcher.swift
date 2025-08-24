@@ -21,7 +21,7 @@ struct CaptureModeSwitcher {
     
     @ObservableState
     struct State: Equatable {
-        var mode: Mode = .none
+        var mode: Mode = .textInput
         var textInput: String = ""
         var camera: CameraMode.State = .init()
         var isCameraSheetPresented: Bool = false
